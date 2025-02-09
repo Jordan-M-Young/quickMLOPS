@@ -1,0 +1,9 @@
+[Project]
+    name = "test"
+    output_dir = "~./Desktop/test_template"
+[Serve]
+    type = "online"
+    api = "REST"
+    framework = "Flask"
+[ML]
+    framework = "scikit-learn"

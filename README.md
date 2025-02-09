@@ -7,3 +7,4 @@ Machine Learning Operations (MLOPs) SDK for Python
 ```bash
 pip install quickmlops
 ```
+
