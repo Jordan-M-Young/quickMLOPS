@@ -1,5 +1,5 @@
 import sys
-
+from build import build
 def main(args: list) -> None:
 
     if len(args) < 2:
@@ -9,6 +9,7 @@ def main(args: list) -> None:
 
     if args[1] == "build":
         print("build selected!")
+        build(args)
         return  
 
     if args[1] == 'delete':

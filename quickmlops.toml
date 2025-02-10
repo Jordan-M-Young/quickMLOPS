@@ -1,9 +1,10 @@
 [Project]
     name = "test"
-    output_dir = "~./Desktop/test_template"
+    output_dir = "~/Desktop/test_template"
+    manage = "pip"
 [Serve]
     type = "online"
     api = "REST"
-    framework = "Flask"
+    framework = "flask"
 [ML]
     framework = "scikit-learn"
