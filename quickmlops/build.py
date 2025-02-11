@@ -41,8 +41,32 @@ def build(args: list) -> None:
         if not os.path.isdir(project_dir):
             os.mkdir(project_dir)
 
+        build_project(config)
+
+
+def build_project(config: dict):
         write_readme(config)
         write_requirements(config)
+        create_structure(config)
+        
+def create_structure(config):
+    project = config.get("Project",{})
+    project_dir = project.get("output_dir","")
+    project_dir = expand_path(project_dir)
+
+    project_name = project.get("name","app")
+
+    app_path  = f'{project_dir}/{project_name}'
+    if not os.path.isdir(app_path):
+        os.mkdir(app_path)
+
+    write_init(app_path)
+
+def write_init(path: str):
+    file = f'{path}/__init__.py'
+    doc_string = '"""Init file Docstring."""'
+    with open(file, 'w') as file:
+        file.write(doc_string)
 
 def write_readme(config: dict):
     project = config.get("Project",{})
