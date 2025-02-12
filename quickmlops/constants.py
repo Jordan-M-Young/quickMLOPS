@@ -11,4 +11,11 @@ class ScikitLearn(Enum):
 class MLFrameworks(Enum):
     SCIKIT_LEARN = "scikit-learn"
     PYTORCH = 'pytorch'
-    
+
+
+class ServeFrameworks(Enum):
+    flask = 'flask'
+    fastapi = 'fastapi'
+    django = 'django'
+    grpc = 'grcp'
+    pyspark = 'pyspark'
