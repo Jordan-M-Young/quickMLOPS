@@ -8,3 +8,4 @@
     framework = "flask"
 [ML]
     framework = "scikit-learn"
+    model = "linear_regression"
