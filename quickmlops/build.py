@@ -2,7 +2,7 @@ import os
 import toml
 import constants
 from utils import expand_path
-
+from templates import scikit_learn, pytorch
 def build(args: list) -> None:
     print(args)
     if len(args) < 2:
@@ -48,7 +48,62 @@ def build_project(config: dict):
         write_readme(config)
         write_requirements(config)
         create_structure(config)
-        
+        write_scripts(config)
+
+
+def write_scripts(config):
+    project = config.get("Project",{})
+    project_dir = project.get("output_dir","")
+    project_dir = expand_path(project_dir)
+    scripts_path = f'{project_dir}/scripts'
+    if not os.path.isdir(scripts_path):
+        os.mkdir(scripts_path)
+
+    write_train_script(config)
+
+def write_train_script(config):
+    ml_frameworks_enum = constants.MLFrameworks
+
+
+    project = config.get("Project",{})
+    project_dir = project.get("output_dir","")
+    project_dir = expand_path(project_dir)
+    scripts_path = f'{project_dir}/scripts'
+    train_file_outpath = f'{scripts_path}/train.py'
+    ml = config.get("ML",{})
+
+    ml_framework = ml.get("framework","scikit-learn")
+
+
+    if ml_framework == ml_frameworks_enum.SCIKIT_LEARN.value:
+        path = scikit_learn.__path__[0]
+        train = f'{path}/train.py'
+        train_file_str = read_python_file(train)
+
+        ml_model = ml.get("model","random_forest_classifier")
+
+        sklearn_enum = constants.ScikitLearn
+
+        model_injects = sklearn_enum[ml_model].value
+
+        train_file_str = train_file_str.replace(
+            "ensemble",model_injects["import_path"]
+            ).replace(
+                "RandomForestClassifier",
+                model_injects['class_instance'])
+
+
+    else:
+        train_file_str = ""
+
+    
+    write_python_file(train_file_outpath,train_file_str)
+
+
+
+
+
+
 def create_structure(config):
     project = config.get("Project",{})
     project_dir = project.get("output_dir","")
@@ -79,7 +134,7 @@ def write_readme(config: dict):
     with open(readme,'w') as file:
         file.write(doc_formatted)
     
-        
+
 
 def write_requirements(config: dict):
     project = config.get("Project",{})
@@ -92,10 +147,19 @@ def write_requirements(config: dict):
     project_dir = expand_path(project_dir)
     req_file = f'{project_dir}/requirements.txt'
 
-    req_text = f"{serve_framework}\n{ml_framework}"
+    req_text = f"{serve_framework}\n{ml_framework}\npickle"
 
     with open(req_file,"w") as rfile:
         rfile.write(req_text)
 
         
-        
+
+def read_python_file(file_path: str) -> str:
+    with open(file_path, 'r') as pfile:
+        data = pfile.read()
+    return data
+
+
+def write_python_file(file_path: str, content: str):
+    with open(file_path, 'w') as pfile:
+        pfile.write(content)
