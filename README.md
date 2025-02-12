@@ -19,7 +19,6 @@ python3 quickmlops build -f <MY_QUICKMLOPS_TOML_FILE>
 
 This will build your project according to the configuration specified in your quickmlops.toml file.
 
-
 ## Configuration
 
 Currently your project build is controlled by the configuration detailed in a quickmlops.toml file. Currently this file has three main sections:

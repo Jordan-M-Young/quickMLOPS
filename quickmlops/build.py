@@ -2,7 +2,7 @@ import os
 import toml
 import constants
 from utils import expand_path
-from templates import scikit_learn, pytorch
+from templates import scikit_learn, pytorch, flask
 def build(args: list) -> None:
     print(args)
     if len(args) < 2:
@@ -45,29 +45,29 @@ def build(args: list) -> None:
 
 
 def build_project(config: dict):
-        write_readme(config)
-        write_requirements(config)
-        create_structure(config)
-        write_scripts(config)
+        project = config.get("Project",{})
+        project_dir = project.get("output_dir","")
+        project_dir = expand_path(project_dir)        
+
+        write_readme(config, project_dir)
+        write_requirements(config, project_dir)
+        create_structure(config, project_dir)
+        write_scripts(config, project_dir)
 
 
-def write_scripts(config):
-    project = config.get("Project",{})
-    project_dir = project.get("output_dir","")
-    project_dir = expand_path(project_dir)
+def write_scripts(config, project_dir):
+
     scripts_path = f'{project_dir}/scripts'
     if not os.path.isdir(scripts_path):
         os.mkdir(scripts_path)
 
-    write_train_script(config)
+    write_train_script(config, project_dir)
 
-def write_train_script(config):
+def write_train_script(config, project_dir):
     ml_frameworks_enum = constants.MLFrameworks
 
 
-    project = config.get("Project",{})
-    project_dir = project.get("output_dir","")
-    project_dir = expand_path(project_dir)
+
     scripts_path = f'{project_dir}/scripts'
     train_file_outpath = f'{scripts_path}/train.py'
     ml = config.get("ML",{})
@@ -100,15 +100,8 @@ def write_train_script(config):
     write_python_file(train_file_outpath,train_file_str)
 
 
-
-
-
-
-def create_structure(config):
+def create_structure(config, project_dir):
     project = config.get("Project",{})
-    project_dir = project.get("output_dir","")
-    project_dir = expand_path(project_dir)
-
     project_name = project.get("name","app")
 
     app_path  = f'{project_dir}/{project_name}'
@@ -116,6 +109,45 @@ def create_structure(config):
         os.mkdir(app_path)
 
     write_init(app_path)
+    write_serve(config, app_path)
+    write_utils(config, app_path)
+
+def write_utils(config, path):
+    outpath = f'{path}/utils.py'
+    ml_frameworks_enum = constants.MLFrameworks
+    ml = config.get("ML",{})
+    ml_framework = ml.get("framework","scikit-learn")
+    
+
+    if ml_framework == ml_frameworks_enum.SCIKIT_LEARN.value:
+        template_path = scikit_learn.__path__[0]
+        utils = f'{template_path}/utils.py'
+        utils_file_str = read_python_file(utils)
+        
+    else:
+        print(ml_framework, "not implemented yet!")
+        utils_file_str = ""
+
+    write_python_file(outpath, utils_file_str)
+
+
+def write_serve(config, path):
+    outpath = f'{path}/app.py'
+    serve_frameworks_enum = constants.ServeFrameworks
+    serve = config.get("Serve",{})
+    serve_framework = serve.get("framework","flask")
+    
+    if serve_framework == serve_frameworks_enum.flask.value:
+        template_path = flask.__path__[0]
+        serve = f'{template_path}/serve.py'
+        serve_file_str = read_python_file(serve)
+        
+    else:
+        print(serve_framework, "not implemented yet!")
+        serve_file_str = ""
+
+    write_python_file(outpath, serve_file_str)
+
 
 def write_init(path: str):
     file = f'{path}/__init__.py'
@@ -123,11 +155,8 @@ def write_init(path: str):
     with open(file, 'w') as file:
         file.write(doc_string)
 
-def write_readme(config: dict):
+def write_readme(config: dict, project_dir: str):
     project = config.get("Project",{})
-    project_dir = project.get("output_dir","")
-    project_dir = expand_path(project_dir)
-
     project_name  = project.get("name","")
     readme = f'{project_dir}/README.md'
     doc_formatted = constants.DOCS.format(project_name)
@@ -136,15 +165,12 @@ def write_readme(config: dict):
     
 
 
-def write_requirements(config: dict):
-    project = config.get("Project",{})
+def write_requirements(config: dict, project_dir: str):
     serve = config.get("Serve",{})
     ml = config.get("ML",{})
 
     serve_framework = serve.get("framework","")
     ml_framework = ml.get("framework","")
-    project_dir = project.get("output_dir","")
-    project_dir = expand_path(project_dir)
     req_file = f'{project_dir}/requirements.txt'
 
     req_text = f"{serve_framework}\n{ml_framework}\npickle"
