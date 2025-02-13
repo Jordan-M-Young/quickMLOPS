@@ -1,6 +1,32 @@
 from enum import Enum
 
-DOCS = """# {}\nThis is a test project. Woohoo. Please render."""
+DOCS = """# {}\n\nThis project repository contains an application built on 
+the {} framework. Using the {} framework, this application generates inferences
+via  a custom trained {} model.
+
+# Installation
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+```
+
+# Train Model
+
+```bash
+python3 ./scripts/train.py
+```
+
+# Run Application
+
+To run this application, run the following command:
+
+```bash
+dummy command
+```
+
+ """
 
 
 class ScikitLearn(Enum):
