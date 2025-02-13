@@ -1,18 +1,35 @@
 from enum import Enum
+
 DOCS = """# {}\nThis is a test project. Woohoo. Please render."""
 
 
 class ScikitLearn(Enum):
-    kmeans = {"import_path":"cluster","class_instance":"KMeans"}
-    random_forest_classifier = {"import_path":"ensemble","class_instance":"RandomForestClassifier"}
-    linear_regression = {"import_path":"linear_model","class_instance":"LinearRegression"}
+    kmeans = {"import_path": "cluster", "class_instance": "KMeans"}
+    random_forest_classifier = {
+        "import_path": "ensemble",
+        "class_instance": "RandomForestClassifier",
+    }
+    linear_regression = {
+        "import_path": "linear_model",
+        "class_instance": "LinearRegression",
+    }
 
 
 class MLFrameworks(Enum):
     SCIKIT_LEARN = "scikit-learn"
-    PYTORCH = 'pytorch'
+    PYTORCH = "pytorch"
 
 
+class ServeFrameworks(Enum):
+    flask = "flask"
+    fastapi = "fastapi"
+
+
+base_requirements = "pandas\nnumpy\npickle"
+
+torch_requirements = "torch"
+scikit_requirements = "scikit-learn"
+flask_requirements = "flask"
 
 
 section_config_docs = """\n\n
