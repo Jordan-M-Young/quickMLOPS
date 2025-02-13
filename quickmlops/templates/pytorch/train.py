@@ -36,7 +36,7 @@ def main():
     test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
     # initialize model, optimizer, and loss function.
-    model = CustomModel()
+    model = CustomModel(n_features=len(features.columns))
     optimizer = Adam(params=model.parameters(), lr=0.0001)
     loss_fn = BCELoss()
 

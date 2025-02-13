@@ -6,7 +6,6 @@ from templates import scikit_learn, pytorch, flask
 
 
 def build(args: list) -> None:
-    print(args)
     if len(args) < 2:
         print(
             "To use the build command fully add the following commands:\n\t -i: Interactive Build\n\t -f <MY_QUICKMLOP_TOML>"
@@ -38,8 +37,6 @@ def build(args: list) -> None:
             print(f"Error: {e}")
             return
 
-        print(config)
-
         project = config.get("Project", {})
         project_dir = project.get("output_dir", "")
 
@@ -49,7 +46,7 @@ def build(args: list) -> None:
             os.mkdir(project_dir)
 
         build_project(config)
-
+        print(f"Project built at {project_dir}")
 
 def build_project(config: dict):
     project = config.get("Project", {})
@@ -123,6 +120,11 @@ def create_structure(config, project_dir):
     app_path = f"{project_dir}/{project_name}"
     if not os.path.isdir(app_path):
         os.mkdir(app_path)
+    if not os.path.isdir(f"{project_dir}/data"):
+        os.mkdir(f"{project_dir}/data")
+    if not os.path.isdir(f"{project_dir}/models"):
+        os.mkdir(f"{project_dir}/models")
+
 
     write_init(app_path)
     write_serve(config, app_path)
@@ -196,7 +198,13 @@ def write_init(path: str):
 def write_readme(config: dict, project_dir: str):
     project_name = get_project_name(config)
     readme = f"{project_dir}/README.md"
-    doc_formatted = constants.DOCS.format(project_name)
+    serve = config.get("Serve",{})
+    ml = config.get("ML",{})
+    serve_framework = serve.get("framework","flask")
+    ml_framework = ml.get("framework","scikit-learn")
+    ml_model = ml.get("model","random_forest_classifier")
+
+    doc_formatted = constants.DOCS.format(project_name,serve_framework,ml_framework,ml_model)
 
     write_text_file(readme, doc_formatted)
 

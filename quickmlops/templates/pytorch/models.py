@@ -11,14 +11,14 @@ from torch.utils.data import DataLoader
 class CustomModel(Module):
     """Trivial CustomModel Template."""
 
-    def __init__(self):
+    def __init__(self, n_features: int):
         """Initialize CustomModel."""
         super(CustomModel, self).__init__()
 
-        self.fc1 = Linear(2, 5)
+        self.fc1 = Linear(n_features, n_features*2)
         self.re1 = ReLU()
         self.d = Dropout(0.2)
-        self.fc2 = Linear(5, 1)
+        self.fc2 = Linear(n_features*2, 1)
         self.sigmoid = Sigmoid()
 
         self.net = Sequential(self.fc1, self.re1, self.d, self.fc2, self.sigmoid)

@@ -12,7 +12,6 @@ def main(args: list) -> None:
         return
 
     if args[1] == "build":
-        print("build selected!")
         build(args)
         return
 
