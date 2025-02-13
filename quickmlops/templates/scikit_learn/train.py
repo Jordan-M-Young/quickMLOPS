@@ -3,9 +3,11 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import pickle
 
+
 def write_model(model, file):
-    with open(file, 'wb') as f:
+    with open(file, "wb") as f:
         pickle.dump(model, f)
+
 
 def main():
     # Dummy Constants Please configure to your needs.
@@ -22,31 +24,30 @@ def main():
     targets = df[TARGET_COLUMN]
     features = df.drop(columns=[TARGET_COLUMN])
 
-    #train test split.
-    x_train, x_test, y_train, y_test = train_test_split(features, targets, test_size=TEST_SIZE)
+    # train test split.
+    x_train, x_test, y_train, y_test = train_test_split(
+        features, targets, test_size=TEST_SIZE
+    )
 
-    #Model instantiated with default args. 
+    # Model instantiated with default args.
     model = RandomForestClassifier()
 
-    #Model fit.
+    # Model fit.
     model.fit(x_train, y_train)
 
-    #Model Score
+    # Model Score
     if VERBOSE:
-        print("Model Accuracy",model.score)
+        print("Model Accuracy", model.score)
 
-    #Model Eval
+    # Model Eval
     y_pred = model.predict(x_test)
 
+    # Further Evaluation Code..
 
-    #Further Evaluation Code..
-
-
-    #Save Model
+    # Save Model
     if SAVE_MODEL:
-        MODEL_PATH = f'{MODEL_OUTPATH}/{MODEL_FILE}'
+        MODEL_PATH = f"{MODEL_OUTPATH}/{MODEL_FILE}"
         write_model(model, MODEL_PATH)
-
 
 
 if __name__ == "__main__":
