@@ -23,7 +23,7 @@ def test_read_python_file():
     file = "./tests/assets/dummy.py"
 
     target = """def fn(x: int) -> float:
-    return(float(x))"""
+    return float(x)\n"""
 
     python_str = read_python_file(file)
 
