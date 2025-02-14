@@ -2,7 +2,6 @@ from torch import Tensor, save
 from torch.nn import Dropout, Linear, Module, ReLU, Sequential, Sigmoid
 import numpy as np
 from torch import DoubleTensor, tensor
-from torch.nn import Module
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
@@ -15,10 +14,10 @@ class CustomModel(Module):
         """Initialize CustomModel."""
         super(CustomModel, self).__init__()
 
-        self.fc1 = Linear(n_features, n_features*2)
+        self.fc1 = Linear(n_features, n_features * 2)
         self.re1 = ReLU()
         self.d = Dropout(0.2)
-        self.fc2 = Linear(n_features*2, 1)
+        self.fc2 = Linear(n_features * 2, 1)
         self.sigmoid = Sigmoid()
 
         self.net = Sequential(self.fc1, self.re1, self.d, self.fc2, self.sigmoid)

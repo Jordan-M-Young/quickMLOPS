@@ -1,4 +1,3 @@
-import numpy as np
 from torch.nn import BCELoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader, random_split

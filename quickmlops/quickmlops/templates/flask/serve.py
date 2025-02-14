@@ -1,5 +1,4 @@
 from flask import Flask, request
-import pickle
 from utils import load_model, inference
 
 app = Flask(__name__)
@@ -14,7 +13,7 @@ def health():
 
 
 @app.route("/inference", methods=["POST"])
-def inference():
+def inf():
     content = request.get_json()
     inp = content["input"]
 

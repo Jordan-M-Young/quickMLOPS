@@ -48,6 +48,7 @@ def build(args: list) -> None:
         build_project(config)
         print(f"Project built at {project_dir}")
 
+
 def build_project(config: dict):
     project = config.get("Project", {})
     project_dir = project.get("output_dir", "")
@@ -125,19 +126,16 @@ def create_structure(config, project_dir):
     if not os.path.isdir(f"{project_dir}/models"):
         os.mkdir(f"{project_dir}/models")
 
-
     write_init(app_path)
     write_serve(config, app_path)
     write_utils(config, app_path)
 
     print(ml_framework)
     if ml_framework == ml_framework_enum.PYTORCH.value:
-        write_models(config, app_path)
+        write_models(app_path)
 
 
-def write_models(config, path):
-    project_name = get_project_name(config)
-
+def write_models(path):
     outpath = f"{path}/models.py"
     template_path = pytorch.__path__[0]
     models = f"{template_path}/models.py"
@@ -198,13 +196,15 @@ def write_init(path: str):
 def write_readme(config: dict, project_dir: str):
     project_name = get_project_name(config)
     readme = f"{project_dir}/README.md"
-    serve = config.get("Serve",{})
-    ml = config.get("ML",{})
-    serve_framework = serve.get("framework","flask")
-    ml_framework = ml.get("framework","scikit-learn")
-    ml_model = ml.get("model","random_forest_classifier")
+    serve = config.get("Serve", {})
+    ml = config.get("ML", {})
+    serve_framework = serve.get("framework", "flask")
+    ml_framework = ml.get("framework", "scikit-learn")
+    ml_model = ml.get("model", "random_forest_classifier")
 
-    doc_formatted = constants.DOCS.format(project_name,serve_framework,ml_framework,ml_model)
+    doc_formatted = constants.DOCS.format(
+        project_name, serve_framework, ml_framework, ml_model
+    )
 
     write_text_file(readme, doc_formatted)
 

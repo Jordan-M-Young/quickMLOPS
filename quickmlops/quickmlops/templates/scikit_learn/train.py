@@ -40,7 +40,7 @@ def main():
         print("Model Accuracy", model.score)
 
     # Model Eval
-    y_pred = model.predict(x_test)
+    _y_pred = model.predict(x_test)
 
     # Further Evaluation Code..
 
