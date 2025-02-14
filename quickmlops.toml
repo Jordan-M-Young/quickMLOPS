@@ -7,5 +7,5 @@
     api = "REST"
     framework = "flask"
 [ML]
-    framework = "scikit-learn"
+    framework = "pytorch"
     model = "linear_regression"

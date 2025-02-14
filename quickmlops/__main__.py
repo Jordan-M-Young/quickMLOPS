@@ -1,6 +1,6 @@
 import sys
-from build import build
-from config_help import conf
+from quickmlops.build import build
+from quickmlops.config_help import conf
 
 
 def main(args: list) -> None:
@@ -12,7 +12,6 @@ def main(args: list) -> None:
         return
 
     if args[1] == "build":
-        print("build selected!")
         build(args)
         return
 
