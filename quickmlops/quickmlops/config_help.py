@@ -1,4 +1,4 @@
-import constants
+from quickmlops import constants
 
 
 def conf(args: list) -> None:

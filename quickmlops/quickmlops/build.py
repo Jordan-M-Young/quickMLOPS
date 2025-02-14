@@ -1,8 +1,8 @@
 import os
 import toml
-import constants
-from utils import expand_path
-from templates import scikit_learn, pytorch, flask
+from quickmlops import constants
+from quickmlops.utils import expand_path
+from quickmlops.templates import scikit_learn, pytorch, flask
 
 
 def build(args: list) -> None:
