@@ -3,6 +3,7 @@ from pandas import DataFrame
 from models import CustomModel
 from torch import load
 
+
 class CustomDataset(Dataset):
     """Custom Dataset Class."""
 
@@ -29,7 +30,6 @@ def log_epoch(epoch: int, train_loss: float, test_loss: float) -> None:
 
 
 def inference(model, features):
-    
     features = DataFrame(features)
     targets = DataFrame(["test"])
 
@@ -40,7 +40,7 @@ def inference(model, features):
     for _, batch in enumerate(dataloader):
         features, label = batch
         output = model(features)
-    
+
         return output
 
 
