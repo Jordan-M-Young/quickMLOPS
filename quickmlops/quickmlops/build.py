@@ -2,7 +2,7 @@ import os
 import toml
 from quickmlops import constants
 from quickmlops.utils import expand_path
-from quickmlops.templates import scikit_learn, pytorch, flask
+from quickmlops.templates import scikit_learn, pytorch, flask, docker
 
 
 def build(args: list) -> None:
@@ -58,7 +58,8 @@ def build_project(config: dict):
     write_requirements(config, project_dir)
     create_structure(config, project_dir)
     write_scripts(config, project_dir)
-
+    write_dockerfile(config, project_dir)
+    write_docker_entrypoint(config, project_dir)
 
 def write_scripts(config, project_dir):
     scripts_path = f"{project_dir}/scripts"
@@ -189,8 +190,7 @@ def write_serve(config, path):
 def write_init(path: str):
     file = f"{path}/__init__.py"
     doc_string = '"""Init file Docstring."""'
-    with open(file, "w") as file:
-        file.write(doc_string)
+    write_python_file(file, doc_string)
 
 
 def write_readme(config: dict, project_dir: str):
@@ -240,15 +240,33 @@ def read_python_file(file_path: str) -> str:
     return data
 
 
-def write_python_file(file_path: str, content: str):
+def write_python_file(file_path: str, content: str) -> None:
     write_text_file(file_path, content)
 
 
-def write_text_file(file_path: str, content: str):
+def write_text_file(file_path: str, content: str) -> None:
     with open(file_path, "w") as rfile:
         rfile.write(content)
 
-
+def read_text_file(file_path: str) -> str:
+    with open(file_path,'r') as f:
+        return f.read()
+    
 def get_project_name(config: dict) -> str:
     project = config.get("Project", {})
     return project.get("name", "app")
+
+
+def write_dockerfile(config: dict, path: str) -> None:
+    template_path = docker.__path__[0]
+    dockerfile = f'{template_path}/Dockerfile'
+    dockerfile_str = read_text_file(dockerfile)
+    outpath = f"{path}/Dockerfile"
+    write_text_file(outpath,dockerfile_str)
+
+def write_docker_entrypoint(config: dict, path: str) -> None:
+    template_path = docker.__path__[0]
+    entry_script = f'{template_path}/entrypoint.sh'
+    entry_script_str = read_text_file(entry_script)
+    outpath = f"{path}/entrypoint.sh"
+    write_text_file(outpath,entry_script_str)
