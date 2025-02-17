@@ -15,8 +15,10 @@ def build(args: list) -> None:
     if args[2] == "-i":
         print("Welcome to quickMLOPS interactive template builder.")
         print("More on this soon!.")
+        return
+        # config = get_interactive_config()
 
-    if args[2] == "-f":
+    elif args[2] == "-f":
         if len(args) < 4:
             print(
                 "Please add the path to a valid quickmlops.toml file after the -f flag."
@@ -37,201 +39,197 @@ def build(args: list) -> None:
             print(f"Error: {e}")
             return
 
-        project = config.get("Project", {})
-        project_dir = project.get("output_dir", "")
-
-        project_dir = expand_path(project_dir)
-
-        if not os.path.isdir(project_dir):
-            os.mkdir(project_dir)
-
-        build_project(config)
-        print(f"Project built at {project_dir}")
-
-
-def build_project(config: dict):
-    project = config.get("Project", {})
-    project_dir = project.get("output_dir", "")
-    project_dir = expand_path(project_dir)
-
-    write_readme(config, project_dir)
-    write_requirements(config, project_dir)
-    create_structure(config, project_dir)
-    write_scripts(config, project_dir)
-    write_dockerfile(config, project_dir)
-    write_docker_entrypoint(config, project_dir)
-
-def write_scripts(config, project_dir):
-    scripts_path = f"{project_dir}/scripts"
-    if not os.path.isdir(scripts_path):
-        os.mkdir(scripts_path)
-
-    write_train_script(config, project_dir)
-
-
-def write_train_script(config, project_dir):
-    ml_frameworks_enum = constants.MLFrameworks
-    project = config.get("Project", {})
-    project_name = project.get("name", "app")
-
-    scripts_path = f"{project_dir}/scripts"
-    train_file_outpath = f"{scripts_path}/train.py"
-    ml = config.get("ML", {})
-
-    ml_framework = ml.get("framework", "scikit-learn")
-
-    if ml_framework == ml_frameworks_enum.SCIKIT_LEARN.value:
-        path = scikit_learn.__path__[0]
-        train = f"{path}/train.py"
-        train_file_str = read_python_file(train)
-
-        ml_model = ml.get("model", "random_forest_classifier")
-
-        sklearn_enum = constants.ScikitLearn
-
-        model_injects = sklearn_enum[ml_model].value
-
-        train_file_str = train_file_str.replace(
-            "ensemble", model_injects["import_path"]
-        ).replace("RandomForestClassifier", model_injects["class_instance"])
-
-    elif ml_framework == ml_frameworks_enum.PYTORCH.value:
-        path = pytorch.__path__[0]
-        train = f"{path}/train.py"
-        train_file_str = read_python_file(train)
-        train_file_str = train_file_str.replace(
-            "from utils", f"from {project_name}.utils"
-        )
-
-        train_file_str = train_file_str.replace(
-            "from models", f"from {project_name}.models"
-        )
-
+        builder = Builder(config=config)
+        builder.build_project()
     else:
-        train_file_str = ""
-
-    write_python_file(train_file_outpath, train_file_str)
-
-
-def create_structure(config, project_dir):
-    project_name = get_project_name(config)
-
-    ml = config.get("ML", {})
-    ml_framework = ml.get("framework", "scikit-learn")
-    ml_framework_enum = constants.MLFrameworks
-    app_path = f"{project_dir}/{project_name}"
-    if not os.path.isdir(app_path):
-        os.mkdir(app_path)
-    if not os.path.isdir(f"{project_dir}/data"):
-        os.mkdir(f"{project_dir}/data")
-    if not os.path.isdir(f"{project_dir}/models"):
-        os.mkdir(f"{project_dir}/models")
-
-    write_init(app_path)
-    write_serve(config, app_path)
-    write_utils(config, app_path)
-
-    print(ml_framework)
-    if ml_framework == ml_framework_enum.PYTORCH.value:
-        write_models(app_path)
+        print(f"Arg: '{args[2]}' not valid!")
+        return
 
 
-def write_models(path):
-    outpath = f"{path}/models.py"
-    template_path = pytorch.__path__[0]
-    models = f"{template_path}/models.py"
-    models_file_str = read_python_file(models)
+class Builder:
+    def __init__(self, config: dict):
+        self.config = config
+        self.project_name = get_project_name(self.config)
+        self.ml = self.config["ML"]
+        self.serve = self.config["Serve"]
+        self.project = self.config["Project"]
+        self.project_dir = get_project_dir(self.config)
+        self.app_path = f"{self.project_dir}/{self.project_name}"
+        self.init_directory()
 
-    write_python_file(outpath, models_file_str)
+    def init_directory(self):
+        if not os.path.isdir(self.project_dir):
+            os.mkdir(self.project_dir)
 
+    def build_project(self):
+        self.write_readme()
+        self.write_requirements()
+        self.create_structure()
+        self.write_scripts()
+        self.write_dockerfile()
+        self.write_docker_entrypoint()
 
-def write_utils(config, path):
-    outpath = f"{path}/utils.py"
+    def create_structure(self):
+        ml_framework = self.ml.get("framework", "scikit-learn")
+        ml_framework_enum = constants.MLFrameworks
 
-    ml_frameworks_enum = constants.MLFrameworks
-    ml = config.get("ML", {})
-    ml_framework = ml.get("framework", "scikit-learn")
+        create_dir_if_nonex(self.app_path)
+        create_dir_if_nonex(f"{self.project_dir}/data")
+        create_dir_if_nonex(f"{self.project_dir}/models")
 
-    if ml_framework == ml_frameworks_enum.SCIKIT_LEARN.value:
-        template_path = scikit_learn.__path__[0]
-        utils = f"{template_path}/utils.py"
-        utils_file_str = read_python_file(utils)
+        self.write_init()
+        self.write_serve()
+        self.write_utils()
 
-    elif ml_framework == ml_frameworks_enum.PYTORCH.value:
+        print(ml_framework)
+        if ml_framework == ml_framework_enum.PYTORCH.value:
+            self.write_models()
+
+    def write_readme(self):
+        readme = f"{self.project_dir}/README.md"
+
+        serve_framework = self.serve.get("framework", "flask")
+        ml_framework = self.ml.get("framework", "scikit-learn")
+        ml_model = self.ml.get("model", "random_forest_classifier")
+
+        doc_formatted = constants.DOCS.format(
+            self.project_name, serve_framework, ml_framework, ml_model
+        )
+
+        write_text_file(readme, doc_formatted)
+
+    def write_requirements(self):
+        serve_framework = self.serve.get("framework", "")
+        ml_framework = self.ml.get("framework", "")
+        req_file = f"{self.project_dir}/requirements.txt"
+
+        if ml_framework == constants.MLFrameworks.SCIKIT_LEARN.value:
+            ml_req = constants.scikit_requirements
+        elif ml_framework == constants.MLFrameworks.PYTORCH.value:
+            ml_req = constants.torch_requirements
+        else:
+            ml_req = ""
+
+        if serve_framework == constants.ServeFrameworks.flask.value:
+            serve_req = constants.flask_requirements
+        else:
+            serve_req = ""
+
+        req_text = f"{constants.base_requirements}\n{ml_req}\n{serve_req}"
+
+        write_text_file(req_file, req_text)
+
+    def write_dockerfile(self) -> None:
+        template_path = docker.__path__[0]
+        dockerfile = f"{template_path}/Dockerfile"
+        dockerfile_str = read_text_file(dockerfile)
+        outpath = f"{self.project_dir}/Dockerfile"
+        write_text_file(outpath, dockerfile_str)
+
+    def write_docker_entrypoint(self) -> None:
+        template_path = docker.__path__[0]
+        entry_script = f"{template_path}/entrypoint.sh"
+        entry_script_str = read_text_file(entry_script)
+        outpath = f"{self.project_dir}/entrypoint.sh"
+        write_text_file(outpath, entry_script_str)
+
+    def write_scripts(self) -> None:
+        scripts_path = f"{self.project_dir}/scripts"
+        if not os.path.isdir(scripts_path):
+            os.mkdir(scripts_path)
+
+        self.write_train_script()
+
+    def write_train_script(self) -> None:
+        ml_frameworks_enum = constants.MLFrameworks
+
+        scripts_path = f"{self.project_dir}/scripts"
+        train_file_outpath = f"{scripts_path}/train.py"
+
+        ml_framework = self.ml.get("framework", "scikit-learn")
+
+        if ml_framework == ml_frameworks_enum.SCIKIT_LEARN.value:
+            path = scikit_learn.__path__[0]
+            train = f"{path}/train.py"
+            train_file_str = read_python_file(train)
+
+            ml_model = self.ml.get("model", "random_forest_classifier")
+
+            sklearn_enum = constants.ScikitLearn
+
+            model_injects = sklearn_enum[ml_model].value
+
+            train_file_str = train_file_str.replace(
+                "ensemble", model_injects["import_path"]
+            ).replace("RandomForestClassifier", model_injects["class_instance"])
+
+        elif ml_framework == ml_frameworks_enum.PYTORCH.value:
+            path = pytorch.__path__[0]
+            train = f"{path}/train.py"
+            train_file_str = read_python_file(train)
+            train_file_str = train_file_str.replace(
+                "from utils", f"from {self.project_name}.utils"
+            )
+
+            train_file_str = train_file_str.replace(
+                "from models", f"from {self.project_name}.models"
+            )
+
+        else:
+            train_file_str = ""
+
+        write_python_file(train_file_outpath, train_file_str)
+
+    def write_models(self):
+        outpath = f"{self.app_path}/models.py"
         template_path = pytorch.__path__[0]
-        utils = f"{template_path}/utils.py"
-        utils_file_str = read_python_file(utils)
+        models = f"{template_path}/models.py"
+        models_file_str = read_python_file(models)
 
-    else:
-        print(ml_framework, "not implemented yet!")
-        utils_file_str = ""
+        write_python_file(outpath, models_file_str)
 
-    write_python_file(outpath, utils_file_str)
+    def write_utils(self) -> None:
+        outpath = f"{self.app_path}/utils.py"
 
+        ml_frameworks_enum = constants.MLFrameworks
+        ml_framework = self.ml.get("framework", "scikit-learn")
 
-def write_serve(config, path):
-    outpath = f"{path}/app.py"
-    serve_frameworks_enum = constants.ServeFrameworks
-    serve = config.get("Serve", {})
-    serve_framework = serve.get("framework", "flask")
+        if ml_framework == ml_frameworks_enum.SCIKIT_LEARN.value:
+            template_path = scikit_learn.__path__[0]
+            utils = f"{template_path}/utils.py"
+            utils_file_str = read_python_file(utils)
 
-    if serve_framework == serve_frameworks_enum.flask.value:
-        template_path = flask.__path__[0]
-        serve = f"{template_path}/serve.py"
-        serve_file_str = read_python_file(serve)
+        elif ml_framework == ml_frameworks_enum.PYTORCH.value:
+            template_path = pytorch.__path__[0]
+            utils = f"{template_path}/utils.py"
+            utils_file_str = read_python_file(utils)
 
-    else:
-        print(serve_framework, "not implemented yet!")
-        serve_file_str = ""
+        else:
+            print(ml_framework, "not implemented yet!")
+            utils_file_str = ""
 
-    write_python_file(outpath, serve_file_str)
+        write_python_file(outpath, utils_file_str)
 
+    def write_serve(self) -> None:
+        outpath = f"{self.app_path}/app.py"
+        serve_frameworks_enum = constants.ServeFrameworks
+        serve_framework = self.serve.get("framework", "flask")
 
-def write_init(path: str):
-    file = f"{path}/__init__.py"
-    doc_string = '"""Init file Docstring."""'
-    write_python_file(file, doc_string)
+        if serve_framework == serve_frameworks_enum.flask.value:
+            template_path = flask.__path__[0]
+            serve = f"{template_path}/serve.py"
+            serve_file_str = read_python_file(serve)
 
+        else:
+            print(serve_framework, "not implemented yet!")
+            serve_file_str = ""
 
-def write_readme(config: dict, project_dir: str):
-    project_name = get_project_name(config)
-    readme = f"{project_dir}/README.md"
-    serve = config.get("Serve", {})
-    ml = config.get("ML", {})
-    serve_framework = serve.get("framework", "flask")
-    ml_framework = ml.get("framework", "scikit-learn")
-    ml_model = ml.get("model", "random_forest_classifier")
+        write_python_file(outpath, serve_file_str)
 
-    doc_formatted = constants.DOCS.format(
-        project_name, serve_framework, ml_framework, ml_model
-    )
-
-    write_text_file(readme, doc_formatted)
-
-
-def write_requirements(config: dict, project_dir: str):
-    serve = config.get("Serve", {})
-    ml = config.get("ML", {})
-
-    serve_framework = serve.get("framework", "")
-    ml_framework = ml.get("framework", "")
-    req_file = f"{project_dir}/requirements.txt"
-
-    if ml_framework == constants.MLFrameworks.SCIKIT_LEARN.value:
-        ml_req = constants.scikit_requirements
-    elif ml_framework == constants.MLFrameworks.PYTORCH.value:
-        ml_req = constants.torch_requirements
-    else:
-        ml_req = ""
-
-    if serve_framework == constants.ServeFrameworks.flask.value:
-        serve_req = constants.flask_requirements
-    else:
-        serve_req = ""
-
-    req_text = f"{constants.base_requirements}\n{ml_req}\n{serve_req}"
-
-    write_text_file(req_file, req_text)
+    def write_init(self) -> None:
+        file = f"{self.app_path}/__init__.py"
+        doc_string = '"""Init file Docstring."""'
+        write_python_file(file, doc_string)
 
 
 def read_python_file(file_path: str) -> str:
@@ -248,25 +246,23 @@ def write_text_file(file_path: str, content: str) -> None:
     with open(file_path, "w") as rfile:
         rfile.write(content)
 
+
 def read_text_file(file_path: str) -> str:
-    with open(file_path,'r') as f:
+    with open(file_path, "r") as f:
         return f.read()
-    
+
+
 def get_project_name(config: dict) -> str:
     project = config.get("Project", {})
     return project.get("name", "app")
 
 
-def write_dockerfile(config: dict, path: str) -> None:
-    template_path = docker.__path__[0]
-    dockerfile = f'{template_path}/Dockerfile'
-    dockerfile_str = read_text_file(dockerfile)
-    outpath = f"{path}/Dockerfile"
-    write_text_file(outpath,dockerfile_str)
+def get_project_dir(config):
+    project = config.get("Project", {})
+    project_dir = project.get("output_dir", "")
+    return expand_path(project_dir)
 
-def write_docker_entrypoint(config: dict, path: str) -> None:
-    template_path = docker.__path__[0]
-    entry_script = f'{template_path}/entrypoint.sh'
-    entry_script_str = read_text_file(entry_script)
-    outpath = f"{path}/entrypoint.sh"
-    write_text_file(outpath,entry_script_str)
+
+def create_dir_if_nonex(path) -> None:
+    if not os.path.isdir(path):
+        os.mkdir(path)
