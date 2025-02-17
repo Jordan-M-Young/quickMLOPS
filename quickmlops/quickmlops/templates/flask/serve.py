@@ -7,9 +7,14 @@ MODEL_PATH = "../models/clf1.pkl"
 model = load_model(MODEL_PATH)
 
 
+@app.route("/version")
+def version():
+    return {"Version": "0.0.0", "Application": "Test"}
+
+
 @app.route("/health")
 def health():
-    return {"Version": "0.0.0", "Application": "Test"}
+    return 200
 
 
 @app.route("/inference", methods=["POST"])

@@ -72,12 +72,10 @@ class Builder:
     def create_structure(self):
         ml_framework = self.ml.get("framework", "scikit-learn")
         ml_framework_enum = constants.MLFrameworks
-        if not os.path.isdir(self.app_path):
-            os.mkdir(self.app_path)
-        if not os.path.isdir(f"{self.project_dir}/data"):
-            os.mkdir(f"{self.project_dir}/data")
-        if not os.path.isdir(f"{self.project_dir}/models"):
-            os.mkdir(f"{self.project_dir}/models")
+
+        create_dir_if_nonex(self.app_path)
+        create_dir_if_nonex(f"{self.project_dir}/data")
+        create_dir_if_nonex(f"{self.project_dir}/models")
 
         self.write_init()
         self.write_serve()
@@ -263,3 +261,8 @@ def get_project_dir(config):
     project = config.get("Project", {})
     project_dir = project.get("output_dir", "")
     return expand_path(project_dir)
+
+
+def create_dir_if_nonex(path) -> None:
+    if not os.path.isdir(path):
+        os.mkdir(path)
