@@ -1,5 +1,8 @@
 # quickMLOPS
-Machine Learning Operations (MLOPs) SDK for Python
+QuickMLOPS is a Machine Learning Operations (MLOPs) SDK for Python. Quickmlops can be used
+to quickly build out fully functioning ML projects and serve them. Quickmlops allows
+users to build projects using the most common python ML frameworks including Scikit-Learn
+and Pytorch and serve them with popular API frameworks like flask and fastapi.
 
 # Getting Started
 
@@ -32,3 +35,14 @@ For help on building a valid quickmlops.toml see an example file [here](https://
 ```bash
 python3 quickmlops config --help <SECTION>
 ```
+
+## Supported Frameworks
+
+### ML
+
+- Scikit-Learn
+- Pytorch
+
+### Serving
+
+- flask
