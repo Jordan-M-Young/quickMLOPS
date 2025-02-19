@@ -60,7 +60,7 @@ python3 quickmlops config --help <SECTION>
 
 ### ML
 
-- [Scikit-Learn](https://scikit-learn.org/stable/index.html)
+- [Scikit-Learn](https://scikit-learn.org/stable/index.html) [Quickmlops Docs](https://github.com/Jordan-M-Young/quickMLOPS/blob/main/docs/scikit-learn.md)
 - [Pytorch](https://pytorch.org/)
 
 ### Serving
