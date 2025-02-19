@@ -40,11 +40,11 @@ python3 quickmlops config --help <SECTION>
 
 ### ML
 
-- Scikit-Learn
-- Pytorch
+- [Scikit-Learn](https://scikit-learn.org/stable/index.html)
+- [Pytorch](https://pytorch.org/)
 
 ### Serving
 
-- flask
-- fastapi
+- [flask](https://flask.palletsprojects.com/en/stable/)
+- [fastapi](https://fastapi.tiangolo.com/)
 
