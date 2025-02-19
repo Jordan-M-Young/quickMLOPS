@@ -39,6 +39,14 @@ class ScikitLearn(Enum):
         "import_path": "linear_model",
         "class_instance": "LinearRegression",
     }
+    logistic_regression = {
+        "import_path":"linear_model",
+        "class_instance":"LogisticRegression"
+    }
+    k_nearest_neighbors_classifier = {
+        "import_path":"neighbors",
+        "class_instance":"KNeighborsClassifier"
+    }
 
 
 class MLFrameworks(Enum):
