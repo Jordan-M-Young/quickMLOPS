@@ -46,3 +46,5 @@ python3 quickmlops config --help <SECTION>
 ### Serving
 
 - flask
+- fastapi
+
