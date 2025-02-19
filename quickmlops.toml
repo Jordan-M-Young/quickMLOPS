@@ -5,7 +5,7 @@
 [Serve]
     type = "online"
     api = "REST"
-    framework = "flask"
+    framework = "fastapi"
 [ML]
-    framework = "pytorch"
+    framework = "scikit-learn"
     model = "linear_regression"

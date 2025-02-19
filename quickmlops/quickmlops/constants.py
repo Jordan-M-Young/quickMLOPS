@@ -56,7 +56,7 @@ base_requirements = "pandas\nnumpy\npickle"
 torch_requirements = "torch"
 scikit_requirements = "scikit-learn"
 flask_requirements = "flask"
-
+fastapi_requirements = 'fastapi'
 
 section_config_docs = """\n\n
 

@@ -2,7 +2,7 @@ import os
 import toml
 from quickmlops import constants
 from quickmlops.utils import expand_path
-from quickmlops.templates import scikit_learn, pytorch, flask, docker
+from quickmlops.templates import scikit_learn, pytorch, flask, docker, fastapi
 
 
 def build(args: list) -> None:
@@ -217,6 +217,11 @@ class Builder:
 
         if serve_framework == serve_frameworks_enum.flask.value:
             template_path = flask.__path__[0]
+            serve = f"{template_path}/serve.py"
+            serve_file_str = read_python_file(serve)
+
+        elif serve_framework == serve_frameworks_enum.fastapi.value:
+            template_path = fastapi.__path__[0]
             serve = f"{template_path}/serve.py"
             serve_file_str = read_python_file(serve)
 
