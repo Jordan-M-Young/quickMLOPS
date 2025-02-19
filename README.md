@@ -20,7 +20,27 @@ To build a project run the following:
 python3 quickmlops build -f <MY_QUICKMLOPS_TOML_FILE>
 ```
 
-This will build your project according to the configuration specified in your quickmlops.toml file.
+This will build your project according to the configuration specified in your quickmlops.toml file. The output project's
+contents and structure will look like the following:
+
+```
+output_dir/
+|-- models/
+|-- data/
+|-- scripts/
+|   |-- train.py
+|
+|-- project_name/
+|   |-- __init__.py
+|   |-- app.py
+|   |-- utils.py
+|   |-- models.py (depending on ML framework)
+|
+|-- Dockerfile
+|-- entrypoint.sh
+|-- requirements.txt
+|-- README.md
+```
 
 ## Configuration
 
