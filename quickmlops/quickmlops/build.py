@@ -6,6 +6,15 @@ from quickmlops.templates import scikit_learn, pytorch, flask, docker, fastapi
 
 
 def build(args: list) -> None:
+    """Project Build routine. 
+    
+    
+    args:
+
+    args (list): a list of arguments input from the invoking of the 
+    build command in the quickmlops cli
+
+    """
     if len(args) < 2:
         print(
             "To use the build command fully add the following commands:\n\t -i: Interactive Build\n\t -f <MY_QUICKMLOP_TOML>"
@@ -46,8 +55,19 @@ def build(args: list) -> None:
         return
 
 
-class Builder:
+class Builder():
+    """Project Builder Class"""
     def __init__(self, config: dict):
+        """Initialize builder class.
+        args:
+
+        config (dict): dictionary containing configuration
+        variables specified via a quickmlops.toml file or
+        interactively.
+        
+        """
+
+
         self.config = config
         self.project_name = get_project_name(self.config)
         self.ml = self.config["ML"]
@@ -58,10 +78,13 @@ class Builder:
         self.init_directory()
 
     def init_directory(self):
-        if not os.path.isdir(self.project_dir):
-            os.mkdir(self.project_dir)
+        """Initializes the project's directory if it
+        does not exist."""
+        create_dir_if_nonex(self.project_dir)
 
     def build_project(self):
+        """Wrapper function for build functions of 
+        specific project components."""
         self.write_readme()
         self.write_requirements()
         self.create_structure()
@@ -70,6 +93,12 @@ class Builder:
         self.write_docker_entrypoint()
 
     def create_structure(self):
+        """Creates project structure by creating a 
+        data directory, a models directory, and an app directory.
+        Then populates the app directory with various required
+        python files.
+        """
+
         ml_framework = self.ml.get("framework", "scikit-learn")
         ml_framework_enum = constants.MLFrameworks
 
@@ -86,6 +115,8 @@ class Builder:
             self.write_models()
 
     def write_readme(self):
+        """Writes a custom Readme file for the built project."""
+
         readme = f"{self.project_dir}/README.md"
 
         serve_framework = self.serve.get("framework", "flask")
@@ -99,6 +130,9 @@ class Builder:
         write_text_file(readme, doc_formatted)
 
     def write_requirements(self):
+        """Writes a custom requirements.txt file for the 
+        built project."""
+
         serve_framework = self.serve.get("framework", "")
         ml_framework = self.ml.get("framework", "")
         req_file = f"{self.project_dir}/requirements.txt"
@@ -120,6 +154,9 @@ class Builder:
         write_text_file(req_file, req_text)
 
     def write_dockerfile(self) -> None:
+        """Writes a custom Dockerfile to support the application
+        of the built project."""
+
         template_path = docker.__path__[0]
         dockerfile = f"{template_path}/Dockerfile"
         dockerfile_str = read_text_file(dockerfile)
@@ -127,6 +164,9 @@ class Builder:
         write_text_file(outpath, dockerfile_str)
 
     def write_docker_entrypoint(self) -> None:
+        """Writes a custom docker entrypoint script for the built
+        project."""
+
         template_path = docker.__path__[0]
         entry_script = f"{template_path}/entrypoint.sh"
         entry_script_str = read_text_file(entry_script)
@@ -134,6 +174,7 @@ class Builder:
         write_text_file(outpath, entry_script_str)
 
     def write_scripts(self) -> None:
+        """Writes standalone script files for the built project."""
         scripts_path = f"{self.project_dir}/scripts"
         if not os.path.isdir(scripts_path):
             os.mkdir(scripts_path)
@@ -141,6 +182,9 @@ class Builder:
         self.write_train_script()
 
     def write_train_script(self) -> None:
+        """Writes a custom model training script for the 
+        built project."""
+
         ml_frameworks_enum = constants.MLFrameworks
 
         scripts_path = f"{self.project_dir}/scripts"
@@ -181,6 +225,9 @@ class Builder:
         write_python_file(train_file_outpath, train_file_str)
 
     def write_models(self):
+        """Writes a models.py file that contains the model class
+        definition of a pytorch model."""
+
         outpath = f"{self.app_path}/models.py"
         template_path = pytorch.__path__[0]
         models = f"{template_path}/models.py"
@@ -189,6 +236,9 @@ class Builder:
         write_python_file(outpath, models_file_str)
 
     def write_utils(self) -> None:
+        """Writes a custom utils.py file for supporting the
+        app of the built project."""
+
         outpath = f"{self.app_path}/utils.py"
 
         ml_frameworks_enum = constants.MLFrameworks
@@ -211,6 +261,9 @@ class Builder:
         write_python_file(outpath, utils_file_str)
 
     def write_serve(self) -> None:
+        """Writes a custom app.py which contains the 
+        server code for this project."""
+
         outpath = f"{self.app_path}/app.py"
         serve_frameworks_enum = constants.ServeFrameworks
         serve_framework = self.serve.get("framework", "flask")
@@ -232,42 +285,50 @@ class Builder:
         write_python_file(outpath, serve_file_str)
 
     def write_init(self) -> None:
+        """Writes a python __init__.py file to the app directory."""
+
         file = f"{self.app_path}/__init__.py"
         doc_string = '"""Init file Docstring."""'
         write_python_file(file, doc_string)
 
 
 def read_python_file(file_path: str) -> str:
-    with open(file_path, "r") as pfile:
-        data = pfile.read()
-    return data
+    """Reads a python file to string."""
+    return read_text_file(file_path)
+
 
 
 def write_python_file(file_path: str, content: str) -> None:
+    """Writes a python file string to disk."""
     write_text_file(file_path, content)
 
 
 def write_text_file(file_path: str, content: str) -> None:
+    """Writes a text file."""
     with open(file_path, "w") as rfile:
         rfile.write(content)
 
 
 def read_text_file(file_path: str) -> str:
+    """Reads a text file."""
     with open(file_path, "r") as f:
         return f.read()
 
 
 def get_project_name(config: dict) -> str:
+    """Gets the project name field from a config dictionary."""
     project = config.get("Project", {})
     return project.get("name", "app")
 
 
 def get_project_dir(config):
+    """Gets the project output_dir field from a config dictionary."""
+
     project = config.get("Project", {})
     project_dir = project.get("output_dir", "")
     return expand_path(project_dir)
 
-
 def create_dir_if_nonex(path) -> None:
+    """Creats a directory if it does not exist."""
     if not os.path.isdir(path):
         os.mkdir(path)

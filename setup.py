@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.0"
+VERSION = "0.0.1"
 DESCRIPTION = "quickmlops"
 LONG_DESCRIPTION = "MLOPs SDK"
 
@@ -19,5 +19,6 @@ setup(
     keywords=["python3", "mlops", "machine learning"],
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence"
     ],
 )
