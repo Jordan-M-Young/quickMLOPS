@@ -60,9 +60,9 @@ python3 quickmlops config --help <SECTION>
 
 ### ML
 
-- [Scikit-Learn](https://scikit-learn.org/stable/index.html) [Quickmlops Docs](https://github.com/Jordan-M-Young/quickMLOPS/blob/main/docs/scikit-learn.md)
+- [Scikit-Learn](https://scikit-learn.org/stable/index.html)
 - [Pytorch](https://pytorch.org/)
-
+- [XGBoost](https://xgboost.readthedocs.io/en/stable/index.html#)
 ### Serving
 
 - [flask](https://flask.palletsprojects.com/en/stable/)
