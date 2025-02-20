@@ -52,6 +52,7 @@ class ScikitLearn(Enum):
 class MLFrameworks(Enum):
     SCIKIT_LEARN = "scikit-learn"
     PYTORCH = "pytorch"
+    XGBOOST = 'xgboost'
 
 
 class ServeFrameworks(Enum):
@@ -60,11 +61,11 @@ class ServeFrameworks(Enum):
 
 
 base_requirements = "pandas\nnumpy\npickle"
-
 torch_requirements = "torch"
 scikit_requirements = "scikit-learn"
 flask_requirements = "flask"
 fastapi_requirements = 'fastapi'
+xgboost_requirements = 'xgboost'
 
 section_config_docs = """\n\n
 
