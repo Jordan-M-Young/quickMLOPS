@@ -2,7 +2,7 @@ import os
 import toml
 from quickmlops import constants
 from quickmlops.utils import expand_path
-from quickmlops.templates import scikit_learn, pytorch, flask, docker, fastapi
+from quickmlops.templates import xgboost, scikit_learn, pytorch, flask, docker, fastapi
 
 
 def build(args: list) -> None:
@@ -141,6 +141,8 @@ class Builder():
             ml_req = constants.scikit_requirements
         elif ml_framework == constants.MLFrameworks.PYTORCH.value:
             ml_req = constants.torch_requirements
+        elif ml_framework == constants.MLFrameworks.XGBOOST.value:
+            ml_req = constants.xgboost_requirements
         else:
             ml_req = ""
 
@@ -218,7 +220,10 @@ class Builder():
             train_file_str = train_file_str.replace(
                 "from models", f"from {self.project_name}.models"
             )
-
+        elif ml_framework == ml_frameworks_enum.XGBOOST.value:
+            path = xgboost.__path__[0]
+            train = f"{path}/train.py"
+            train_file_str = read_python_file(train)
         else:
             train_file_str = ""
 
@@ -251,6 +256,10 @@ class Builder():
 
         elif ml_framework == ml_frameworks_enum.PYTORCH.value:
             template_path = pytorch.__path__[0]
+            utils = f"{template_path}/utils.py"
+            utils_file_str = read_python_file(utils)
+        elif ml_framework == ml_frameworks_enum.XGBOOST.value:
+            template_path = xgboost.__path__[0]
             utils = f"{template_path}/utils.py"
             utils_file_str = read_python_file(utils)
 
