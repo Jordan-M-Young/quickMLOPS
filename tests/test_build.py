@@ -59,3 +59,14 @@ def test_write_init():
 def test_dummy():
     shutil.rmtree(DUMMY_PROJECT)
     assert True
+
+
+# def test_write_readme():
+#     config = {
+#         "Project": {"output_dir": DUMMY_PROJECT, "name": DUMMY_APP},
+#         "ML": {"framework": "scikit-learn", "model": "linear_regression"},
+#         "Serve": {"framework": "flask"},
+#     }
+
+#     builder = Builder(config)
+#     builder.write_readme()
