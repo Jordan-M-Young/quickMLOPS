@@ -6,12 +6,12 @@ from quickmlops.templates import xgboost, scikit_learn, pytorch, flask, docker, 
 
 
 def build(args: list) -> None:
-    """Project Build routine. 
-    
-    
+    """Project Build routine.
+
+
     args:
 
-    args (list): a list of arguments input from the invoking of the 
+    args (list): a list of arguments input from the invoking of the
     build command in the quickmlops cli
 
     """
@@ -19,12 +19,12 @@ def build(args: list) -> None:
         print(
             "To use the build command fully add the following commands:\n\t -i: Interactive Build\n\t -f <MY_QUICKMLOP_TOML>"
         )
-        return
+        return 0
 
     if args[2] == "-i":
         print("Welcome to quickMLOPS interactive template builder.")
         print("More on this soon!.")
-        return
+        return 1
         # config = get_interactive_config()
 
     elif args[2] == "-f":
@@ -32,7 +32,7 @@ def build(args: list) -> None:
             print(
                 "Please add the path to a valid quickmlops.toml file after the -f flag."
             )
-            return
+            return 2
 
         file_path = args[3]
 
@@ -40,23 +40,25 @@ def build(args: list) -> None:
             print(
                 f"File: {file_path} cannot be found. Please recheck your file name/path."
             )
-            return
+            return 3
 
         try:
             config = toml.load(file_path)
         except Exception as e:
             print(f"Error: {e}")
-            return
+            return 4
 
         builder = Builder(config=config)
         builder.build_project()
+        return 5
     else:
         print(f"Arg: '{args[2]}' not valid!")
-        return
+        return 6
 
 
-class Builder():
+class Builder:
     """Project Builder Class"""
+
     def __init__(self, config: dict):
         """Initialize builder class.
         args:
@@ -64,9 +66,8 @@ class Builder():
         config (dict): dictionary containing configuration
         variables specified via a quickmlops.toml file or
         interactively.
-        
-        """
 
+        """
 
         self.config = config
         self.project_name = get_project_name(self.config)
@@ -83,7 +84,7 @@ class Builder():
         create_dir_if_nonex(self.project_dir)
 
     def build_project(self):
-        """Wrapper function for build functions of 
+        """Wrapper function for build functions of
         specific project components."""
         self.write_readme()
         self.write_requirements()
@@ -93,7 +94,7 @@ class Builder():
         self.write_docker_entrypoint()
 
     def create_structure(self):
-        """Creates project structure by creating a 
+        """Creates project structure by creating a
         data directory, a models directory, and an app directory.
         Then populates the app directory with various required
         python files.
@@ -130,7 +131,7 @@ class Builder():
         write_text_file(readme, doc_formatted)
 
     def write_requirements(self):
-        """Writes a custom requirements.txt file for the 
+        """Writes a custom requirements.txt file for the
         built project."""
 
         serve_framework = self.serve.get("framework", "")
@@ -184,7 +185,7 @@ class Builder():
         self.write_train_script()
 
     def write_train_script(self) -> None:
-        """Writes a custom model training script for the 
+        """Writes a custom model training script for the
         built project."""
 
         ml_frameworks_enum = constants.MLFrameworks
@@ -270,7 +271,7 @@ class Builder():
         write_python_file(outpath, utils_file_str)
 
     def write_serve(self) -> None:
-        """Writes a custom app.py which contains the 
+        """Writes a custom app.py which contains the
         server code for this project."""
 
         outpath = f"{self.app_path}/app.py"
@@ -306,7 +307,6 @@ def read_python_file(file_path: str) -> str:
     return read_text_file(file_path)
 
 
-
 def write_python_file(file_path: str, content: str) -> None:
     """Writes a python file string to disk."""
     write_text_file(file_path, content)
@@ -336,6 +336,7 @@ def get_project_dir(config):
     project = config.get("Project", {})
     project_dir = project.get("output_dir", "")
     return expand_path(project_dir)
+
 
 def create_dir_if_nonex(path) -> None:
     """Creats a directory if it does not exist."""

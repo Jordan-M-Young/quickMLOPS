@@ -10,6 +10,7 @@ model = load_model(MODEL_PATH)
 def version():
     return {"Version": "0.0.0", "Application": "Test"}
 
+
 @app.get("/health")
 def health():
     return 200
@@ -17,8 +18,6 @@ def health():
 
 @app.get("/inference")
 def model_inference(input):
-
-
     inf = inference(model, input)
 
     return {"inference": inf}

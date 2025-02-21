@@ -40,19 +40,19 @@ class ScikitLearn(Enum):
         "class_instance": "LinearRegression",
     }
     logistic_regression = {
-        "import_path":"linear_model",
-        "class_instance":"LogisticRegression"
+        "import_path": "linear_model",
+        "class_instance": "LogisticRegression",
     }
     k_nearest_neighbors_classifier = {
-        "import_path":"neighbors",
-        "class_instance":"KNeighborsClassifier"
+        "import_path": "neighbors",
+        "class_instance": "KNeighborsClassifier",
     }
 
 
 class MLFrameworks(Enum):
     SCIKIT_LEARN = "scikit-learn"
     PYTORCH = "pytorch"
-    XGBOOST = 'xgboost'
+    XGBOOST = "xgboost"
 
 
 class ServeFrameworks(Enum):
@@ -64,8 +64,8 @@ base_requirements = "pandas\nnumpy\npickle"
 torch_requirements = "torch"
 scikit_requirements = "scikit-learn"
 flask_requirements = "flask"
-fastapi_requirements = 'fastapi'
-xgboost_requirements = 'xgboost'
+fastapi_requirements = "fastapi"
+xgboost_requirements = "xgboost"
 
 section_config_docs = """\n\n
 
