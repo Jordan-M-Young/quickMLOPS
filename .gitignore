@@ -4,3 +4,4 @@ dist
 *.egg-info
 *.pyc
 *__pycache__
+dummy_project
