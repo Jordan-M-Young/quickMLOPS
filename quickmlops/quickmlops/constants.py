@@ -49,6 +49,11 @@ class ScikitLearn(Enum):
     }
 
 
+class PackageManagement(Enum):
+    PIP = 'pip'
+    POETRY = 'poetry'
+
+
 class MLFrameworks(Enum):
     SCIKIT_LEARN = "scikit-learn"
     PYTORCH = "pytorch"
