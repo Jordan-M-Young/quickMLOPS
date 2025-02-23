@@ -1,8 +1,8 @@
 # quickMLOPS
-QuickMLOPS is a Machine Learning Operations (MLOPs) SDK for Python. Quickmlops can be used
+QuickMLOPS is a Machine Learning Operations (MLOps) SDK for Python. Quickmlops can be used
 to quickly build out fully functioning ML projects and serve them. Quickmlops allows
 users to build projects using the most common python ML frameworks including Scikit-Learn
-and Pytorch and serve them with popular API frameworks like flask and fastapi.
+and Pytorch and serve them with popular API frameworks like Flask and Fastapi.
 
 # Getting Started
 
@@ -50,6 +50,24 @@ Currently your project build is controlled by the configuration detailed in a qu
 - Serve: Controls how your ML model(s) will be served. The main field to select is framework (default is flask)
 - ML: Controls which ML models / framework will be integrated into your built project.
 
+The structure of the quickmlops.toml file should look like so:
+
+```toml
+[Project]
+    name = "test"
+    output_dir = "~/Desktop/test_template"
+    manage = "pip"
+[Serve]
+    type = "online"
+    api = "REST"
+    framework = "fastapi"
+[ML]
+    framework = "scikit-learn"
+    model = "linear_regression"
+```
+
+
+
 For help on building a valid quickmlops.toml see an example file [here](https://github.com/Jordan-M-Young/quickMLOPS/blob/main/quickmlops.toml) or run:
 
 ```bash
@@ -65,6 +83,6 @@ python3 quickmlops config --help <SECTION>
 - [XGBoost](https://xgboost.readthedocs.io/en/stable/index.html#)
 ### Serving
 
-- [flask](https://flask.palletsprojects.com/en/stable/)
-- [fastapi](https://fastapi.tiangolo.com/)
+- [Flask](https://flask.palletsprojects.com/en/stable/)
+- [Fastapi](https://fastapi.tiangolo.com/)
 
