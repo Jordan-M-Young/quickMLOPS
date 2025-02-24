@@ -199,3 +199,11 @@ Currently, valid values for manage are:
 -----------------------------
 -----------------------------
 """
+
+pyproject_toml_template = """[project]
+name = "{}"
+version = "0.0.0"
+description = ""
+authors = []
+readme = "README.md
+"""

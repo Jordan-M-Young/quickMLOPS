@@ -178,13 +178,22 @@ class Builder:
 
     def write_scripts(self) -> None:
         """Writes standalone script files for the built project."""
-        scripts_path = f"{self.project_dir}/scripts"
-        if not os.path.isdir(scripts_path):
-            os.mkdir(scripts_path)
 
-        self.write_train_script()
+        if self.project['manage'] == constants.PackageManagement.PIP.value:
+            scripts_path = f"{self.project_dir}/scripts"
+            if not os.path.isdir(scripts_path):
+                os.mkdir(scripts_path)
+            self.write_train_script_pip()
+        elif self.project['manage'] == constants.PackageManagement.POETRY.value:
+            pass
+            
 
-    def write_train_script(self) -> None:
+        else:
+            pass
+
+
+
+    def write_train_script_pip(self) -> None:
         """Writes a custom model training script for the
         built project."""
 
