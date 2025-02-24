@@ -4,16 +4,15 @@ import pandas as pd
 import pickle
 
 
-def write_model(model, file):
-    with open(file, "wb") as f:
-        pickle.dump(model, f)
+def write_model(model, file_path):
+    model.save_model(file_path)
 
 
 def main():
     # Dummy Constants Please configure to your needs.
     DATA_FILE = "../data/data.csv"
     MODEL_OUTPATH = "../models"
-    MODEL_FILE = "clf1.pkl"
+    MODEL_FILE = "clf1.bin"
     TARGET_COLUMN = "target_column"
     TEST_SIZE = 0.2
     VERBOSE = True

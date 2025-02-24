@@ -1,10 +1,11 @@
 import pickle
+from xgboost import XGBClassifier
 
 
 def load_model(model_path: str):
-    with open(model_path, "rb") as f:
-        model = pickle.load(f)
-        return model
+    model = XGBClassifier()
+    model.load_model(model_path)
+    return model
 
 
 def inference(model, features):
